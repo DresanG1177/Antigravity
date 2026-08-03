@@ -9,41 +9,54 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="dark-premium">
-    <video autoplay muted loop playsinline id="bg-video">
+    <video class="bg-layer" id="bg-video-a" muted loop playsinline autoplay>
+        <source src="background_video.mp4" type="video/mp4">
+    </video>
+    <video class="bg-layer" id="bg-video-b" muted loop playsinline autoplay>
         <source src="background_video.mp4" type="video/mp4">
     </video>
     <div class="overlay"></div>
-    <div class="container">
+
+    <div id="warp-flash"></div>
+
+    <section id="gate">
+        <p class="gate-question">Are you ready for the<br><span class="gate-emphasis">E-MONEY</span>?</p>
+        <button id="gate-btn" type="button">I'M READY</button>
+    </section>
+
+    <div class="container" id="main-content">
         <header>
             <div class="profile-container">
-                <img src="logo_andrew_hd.png" alt="Andrew Trades Logo" class="brand-logo">
+                <img src="logo_andrew_blue.png" alt="Andrew Trades Logo" class="brand-logo">
                 <h1>ANDREW TRADES</h1>
-                <p class="bio">EL DINERO ES EL MEDIO. LA LIBERTAD ES EL FIN.</p>
+                <p class="bio">Money is a tool. Freedom is the goal.</p>
             </div>
         </header>
 
         <main id="links-container">
-            
+
         <a href="https://discord.gg/FM3Ue4aj" class="link-card" target="_blank">
-            <i class="fab fa-discord"></i>
+            <img src="icon_discord.svg" alt="Discord" class="link-icon">
             <span class="link-text">Discord Free</span>
         </a>
-        
+
         <a href="https://whop.com/premiumandrew/" class="link-card" target="_blank">
-            <i class="fas fa-shopping-cart"></i>
+            <img src="icon_whop.png" alt="Whop" class="link-icon link-icon-square">
             <span class="link-text">Whop Premium</span>
         </a>
-        
+
         <a href="https://www.youtube.com/@Andresw_trades" class="link-card" target="_blank">
-            <i class="fab fa-youtube"></i>
+            <img src="icon_youtube.svg" alt="YouTube" class="link-icon">
             <span class="link-text">YouTube</span>
         </a>
-        
+
         </main>
 
         <footer>
             <p>© 2026 Crafted by Antigravity</p>
         </footer>
     </div>
+    <script src="bg-video-loop.js"></script>
+    <script src="gate.js"></script>
 </body>
 </html>

@@ -2,11 +2,11 @@
     --bg-color: #000000;
     --card-bg: rgba(15, 15, 15, 0.8);
     --text-primary: #ffffff;
-    --text-secondary: #d4af37;
-    /* Gold */
-    --accent: linear-gradient(135deg, #d4af37 0%, #f9e29c 100%);
+    --text-secondary: #375cd4;
+    /* Azul — mismo giro de tono (hue-rotate 180deg) aplicado al fondo */
+    --accent: linear-gradient(135deg, #375cd4 0%, #9cb3f9 100%);
     --font-main: 'Outfit', sans-serif;
-    --gold-border: rgba(212, 175, 55, 0.3);
+    --gold-border: rgba(55, 92, 212, 0.3);
 }
 
 * {
@@ -26,7 +26,7 @@ body {
     padding: 60px 20px;
 }
 
-#bg-video {
+.bg-layer {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -37,6 +37,24 @@ body {
     z-index: -2;
     transform: translate(-50%, -50%);
     object-fit: cover;
+    /* Azul ya horneado en el archivo de video — sin filter runtime por rendimiento */
+    opacity: 0;
+    will-change: opacity;
+}
+
+.bg-layer.is-warping {
+    animation: bgWarp var(--warp-ms, 620ms) cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+@keyframes bgWarp {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1) saturate(1);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2.7);
+        filter: brightness(1.7) saturate(1.45);
+    }
 }
 
 .overlay {
@@ -50,12 +68,177 @@ body {
     z-index: -1;
 }
 
+.overlay.is-warping {
+    opacity: 0.35;
+    transition: opacity var(--warp-ms, 620ms) cubic-bezier(0.7, 0, 0.84, 0);
+}
+
 
 .container {
     width: 100%;
     max-width: 450px;
     text-align: center;
     z-index: 1;
+    opacity: 0;
+    transform: scale(0.96);
+    pointer-events: none;
+}
+
+.container.is-revealed {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+    transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* --- Pantalla de entrada --- */
+
+#gate[hidden] {
+    display: none;
+}
+
+#gate {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    padding: 20px;
+    text-align: center;
+    background: radial-gradient(ellipse at center, rgba(0, 4, 15, 0.35) 0%, rgba(0, 4, 15, 0.85) 75%);
+    transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+#gate.is-leaving {
+    pointer-events: none;
+}
+
+.gate-question {
+    font-size: clamp(1.9rem, 7vw, 3rem);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 1px;
+    text-wrap: balance;
+    background: linear-gradient(100deg, #7d90b8 0%, #f0f4ff 20%, #ffffff 32%, #5c76c2 45%, #b7c4e8 58%, #ffffff 70%, #6478b8 85%, #dfe6f7 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: gateTextIn 1s ease-out backwards;
+}
+
+.gate-emphasis {
+    -webkit-text-fill-color: initial;
+    color: #9cb3f9;
+    text-shadow: 0 0 18px rgba(55, 92, 212, 0.85), 0 0 46px rgba(55, 92, 212, 0.5);
+}
+
+.gate-question.is-warping {
+    animation: gateWarp var(--warp-ms, 620ms) cubic-bezier(0.6, 0, 0.9, 0.2) forwards;
+}
+
+@keyframes gateWarp {
+    0% {
+        transform: scale(1) translateZ(0);
+        opacity: 1;
+        filter: blur(0);
+    }
+    100% {
+        transform: scale(2.4) translateZ(0);
+        opacity: 0;
+        filter: blur(6px);
+    }
+}
+
+#gate-btn {
+    font-family: var(--font-main);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #030712;
+    background: var(--accent);
+    border: none;
+    padding: 18px 46px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 0 24px rgba(55, 92, 212, 0.55), 0 8px 30px rgba(0, 0, 0, 0.4);
+    animation: gateTextIn 1s ease-out 0.2s backwards, gatePulse 2.4s ease-in-out 1.2s infinite;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+#gate-btn:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 0 34px rgba(55, 92, 212, 0.75), 0 10px 34px rgba(0, 0, 0, 0.45);
+}
+
+#gate-btn:active {
+    transform: scale(0.96);
+}
+
+#gate-btn.is-clicked {
+    pointer-events: none;
+}
+
+#gate-btn.is-warping {
+    animation: gateWarp var(--warp-ms, 620ms) cubic-bezier(0.6, 0, 0.9, 0.2) forwards;
+}
+
+@keyframes gateTextIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes gatePulse {
+    0%, 100% {
+        box-shadow: 0 0 24px rgba(55, 92, 212, 0.55), 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(55, 92, 212, 0.85), 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* --- Flash de pantalla completa: oculta el instante exacto del reseteo --- */
+
+#warp-flash {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, #ffffff 0%, #dce6ff 35%, #6f8de0 70%, #375cd4 100%);
+    opacity: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+#warp-flash.is-flashing {
+    animation: warpFlash 0.32s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes warpFlash {
+    0% {
+        opacity: 0;
+    }
+    4% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #gate-btn, .gate-question, .container.is-revealed, #gate, .bg-layer.is-warping, #warp-flash.is-flashing {
+        animation: none !important;
+        transition: opacity 0.3s ease !important;
+    }
 }
 
 .profile-container {
@@ -66,7 +249,7 @@ body {
     width: 250px;
     height: auto;
     margin-bottom: 20px;
-    filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.2));
+    filter: drop-shadow(0 0 20px rgba(55, 92, 212, 0.35));
     animation: floatingLogo 4s ease-in-out infinite;
 }
 
@@ -89,13 +272,18 @@ h1 {
 /* Logo contains the name */
 
 .bio {
-    color: var(--text-secondary);
     font-size: 0.85rem;
-    font-weight: 400;
+    font-weight: 600;
     letter-spacing: 3px;
     text-transform: uppercase;
-    opacity: 0.9;
     margin-bottom: 10px;
+    background: linear-gradient(100deg, #7d90b8 0%, #f0f4ff 20%, #ffffff 32%, #5c76c2 45%, #b7c4e8 58%, #ffffff 70%, #6478b8 85%, #dfe6f7 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
 }
 
 #links-container {
@@ -108,12 +296,13 @@ h1 {
     display: flex;
     align-items: center;
     gap: 15px;
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--gold-border);
-    padding: 20px 25px;
-    border-radius: 12px;
+    background: rgba(30, 50, 100, 0.12);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid rgba(150, 180, 255, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 24px rgba(0, 0, 0, 0.25);
+    padding: 18px 25px;
+    border-radius: 14px;
     text-decoration: none;
     color: var(--text-primary);
     font-weight: 500;
@@ -122,17 +311,22 @@ h1 {
     animation: fadeInUp 0.8s ease-out backwards;
 }
 
-.link-card i {
-    font-size: 1.5rem;
+.link-icon {
     width: 30px;
-    color: var(--text-secondary);
+    height: 30px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.link-icon-square {
+    border-radius: 8px;
 }
 
 .link-card:hover {
     transform: translateY(-5px) scale(1.02);
-    background: rgba(30, 30, 30, 1);
-    border-color: #d4af37;
-    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
+    background: rgba(55, 92, 212, 0.18);
+    border-color: rgba(156, 179, 249, 0.55);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 10px 34px rgba(55, 92, 212, 0.35);
 }
 
 footer {
